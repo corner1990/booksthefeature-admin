@@ -1,9 +1,12 @@
 <template>
   <div class="product">
+    <h2 class="title">任务模版</h2>
     <!-- <Search @search="search" /> -->
-    <router-link to="/release-product" class="release-btn">
-      <el-button type="primary" >发布商品</el-button>
-    </router-link>
+    <div class="btn-wrap">
+      <router-link to="/release-task" class="release-btn">
+        <el-button type="primary" >发布任务</el-button>
+      </router-link>
+    </div>
     <div class="table-wrap">
       <dataTable :list="list" :type="publish_type" @update="update" />
     </div>
@@ -47,7 +50,7 @@
 // import Search from './product-compoent/search'
 import dataTable from './product-compoent/data-table'
 import MobileProductDetail from '../../components/product-detail'
-import { getProductList } from './api'
+import { getTask } from './api'
 export default {
   name: 'product',
   props: {
@@ -98,7 +101,11 @@ export default {
       this[key] = value
     },
     handlePageChange(index) {
-      this.loadInfo(index-1)
+      this.pageInfo.index = index -1
+      this.$nextTick(() => {
+        this.loadInfo()
+      })
+      
     },
     /**
      * @des 搜索
@@ -109,25 +116,27 @@ export default {
         page_size: 10
       }
       this.filterInfo = filterInfo
-      this.loadInfo()
+     this.$nextTick(() => {
+        this.loadInfo()
+      })
     },
     /**
      * @desc 加载数据
      */
-    async loadInfo(index = 0) {
+    async loadInfo() {
+      
       if (this.loading) return this.$message.success('数据加载中，请稍等');
       this.list = []
       this.loading = true
       let { publish_type, pageInfo, filterInfo } = this
-      let { errorCode, data } = await getProductList({
+      let { errorCode, data } = await getTask({
         ...pageInfo,
         ...filterInfo,
-        publish_type,
-        index
+        publish_type
       })
       if (errorCode === 0) {
-        this.list = data.product_item_list
-        this.pageInfo = data.pageInfo
+        this.list = data.list
+        this.pageInfo = data.page_info
       }
       this.loading = false
     },
@@ -142,12 +151,21 @@ export default {
 <style scoped lang="less">
 .product{
   position: relative;
-  background: #fff;
+  // background: #fff;
+  .title{
+    background: #fff;
+    padding: 10px 15px;
+    border-bottom: 1px solid #eee
+  }
   .product-tab{
     background: #fff;
     margin-top: 16px;
     padding: 15px;
     
+  }
+  .btn-wrap{
+    margin-top: 16px;
+    background: #fff;
   }
   .release-btn{
     padding: 12px;

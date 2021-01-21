@@ -3,43 +3,9 @@
     <h2 class="title">{{ title }}</h2>
     <BaseInfo @update="update" :editInfo="editInfo" />
     <!-- <PriceWarehouse @update="update" :editInfo="editInfo" /> -->
-    
-    <el-form
-      :label-position="labelPosition"
-      label-width="100px"
-      ref="specialForm"
-      class="specil-form"
-      :model="info"
-      :rules="rules"
-    >
-      <el-form-item label="规格明细">
-        <!-- <p class="tip-text">待商品规格保存后可设置规格明细</p> -->
-        <SpecDetail :list="specifications" @update="update" />
-      </el-form-item>
-      <!-- <el-form-item label="品牌故事" prop="brand_story">
-        <el-input class="medium" v-model="info.brand_story">
-        </el-input>
-      </el-form-item>
-      <el-form-item label="养护说明" prop="care_instructions">
-        <el-input class="medium" v-model="info.care_instructions">
-        </el-input>
-      </el-form-item>
-      <el-form-item label="物流说明" prop="logistics_desc">
-        <el-input class="medium" v-model="info.logistics_desc">
-        </el-input>
-      </el-form-item>
-      <el-form-item label="特别说明" prop="special_note">
-        <el-input class="medium" v-model="info.special_note">
-        </el-input>
-      </el-form-item>
-      <el-form-item label="售后说明" prop="after_sale_instructions">
-        <el-input class="medium" v-model="info.after_sale_instructions">
-        </el-input>
-      </el-form-item> -->
-    </el-form>
-    <ProductDetailEdit @update="update" :editInfo="editInfo" />
     <div class="btn-wrap">
-      <el-button type="" @click="cancel">取消编辑</el-button><el-button type="primary" @click="vertify">保存并预览</el-button>
+      <el-button type="" @click="cancel">取消编辑</el-button>
+      <el-button type="primary" @click="vertify">保存并预览</el-button>
     </div>
   </div>
 </template>
@@ -47,17 +13,13 @@
 <script>
 import BaseInfo from './release-product/base-info'
 // import PriceWarehouse from './release-product/price-warehose'
-import SpecDetail from './release-product/spec-detail'
-import ProductDetailEdit from './release-product/product-detail-edit'
-import { createProduct, getProductDetail, updateProductSkuInfo  } from './api'
+import { createTask, getTaskDetail, updateTask  } from './api'
 
 export default {
   name: 'repease-product',
   props: {},
   components: {
     BaseInfo,
-    SpecDetail,
-    ProductDetailEdit
   },
   data() {
     return {
@@ -65,8 +27,6 @@ export default {
       baseInfo: {
         main_image: []
       },
-      specifications: [],
-      description: [],
       baseForm: null,
       editInfo: null,
       info: {},
@@ -81,25 +41,11 @@ export default {
      * @desc 是否是编辑状态
      */
     isEdit() {
-      return /edit-product/.test(this.$route.path)
+      return /edit-task/.test(this.$route.path)
     },
     rules() {
       return {
-        brand_story: [
-          { required: true, message: '请输入品牌故事', trigger: 'blur' }
-        ],
-        care_instructions: [
-          { required: true, message: '请输入养护说明', trigger: 'blur' }
-        ],
-        logistics_desc: [
-          { required: true, message: '请输入物流说明', trigger: 'blur' }
-        ],
-        special_note: [
-          { required: true, message: '请输入特别说明', trigger: 'blur' }
-        ],
-        after_sale_instructions: [
-          { required: true, message: '请输入售后说明', trigger: 'blur' }
-        ],
+        
       }
     }
   },
@@ -118,9 +64,6 @@ export default {
   },
   methods: {
     update(key, val) {
-      if (key === 'description') {
-        console.log('description', val)
-      }
       this[key] = val
     },
     vertify() {
@@ -157,45 +100,22 @@ export default {
      * @desc 提交
      */
     submit() {
-      let { baseInfo, specifications, description, info } = this
-      let main_image =  baseInfo.main_image.length > 0 ? this.getImgSrc(baseInfo.main_image)[0].content : ''
-      // 判断上传商详页图片
-      
-      specifications = specifications.reduce((prev, next) => {
-        let { key, val } = next
-        prev.push({[key]: val})
-        return prev
-      }, [])
-      let {
-        current_price,
-        original_price,
-        sort
-      } = baseInfo
-      sort = sort ? parseInt(sort) : 0
-      original_price = (original_price - 0) * 100
-      current_price = (current_price - 0) * 100
+      let { baseInfo } = this
+      let { main_image } = baseInfo
       let params = {
-        ...this.baseInfo,
-        ...info,
-        current_price,
-        original_price,
-        main_image,
-        specifications: JSON.stringify(specifications),
-        description: this.getImgSrc(description) || [],
-        sort
+        ...baseInfo,
+        task_cover: this.getImgSrc(main_image)[0].content
       }
-      if (description.length <= 0) {
-        this.$message.error('请上传商品详情图片');
-        return false
-      }
+      delete params.main_image
+      
       // 检测图片是否上传完毕
-      let arr = [...params.description.map(item => item.content), main_image]
+      let arr = []
       let isUpladed = arr.every(item => { return item && !item.includes('blob:') })
       if (!isUpladed) {
         this.$message.error('图片上传中，请稍后再试');
         return false
       }
-
+      
       if (this.isEdit) { // 调用编辑接口
         this.updateProductInfo(params)
         return false
@@ -211,7 +131,7 @@ export default {
       // if (params.base_info.item_id !== '-00000') { return false }
       if (this.loading) return false
       this.loading = true
-      let { errorCode } = await updateProductSkuInfo(params)
+      let { errorCode } = await updateTask(params)
       this.loading = false
       if (errorCode === 0) {
         this.$router.go(-1)
@@ -223,38 +143,11 @@ export default {
     async createProductInfo(params) {
       if (this.loading) return false
       this.loading = true
-      let { errorCode } = await createProduct(params)
+      let { errorCode } = await createTask(params)
       this.loading = false
       if (errorCode === 0) {
         this.$router.go(-1)
       }
-    },
-    /**
-     * @des 处理spec信息
-     */
-    initSpecs() {
-      let { priceInfo } = this
-      let { specList,  sepcsData} = priceInfo
-      if (!sepcsData) return []
-      sepcsData = sepcsData.map((spec ) => {
-        let { id = 1} = spec
-        let detail = []
-         specList.map((item, key) => {
-            let obj = {name: item.name, key, attr: spec[`${key}`]}
-            detail.push(obj)
-          })
-          // 处理index
-          let indexes = detail.map((subItem) => {
-            let { key, attr } = subItem
-            let info = specList[key].attr
-            let values = Object.values(info)
-            return values.indexOf(attr)
-          }).join('_')
-          
-          return {...spec, indexes, detail, sku_id: id}
-      })
-      
-      return sepcsData
     },
     /**
      * @desc 获取图片列表
@@ -279,8 +172,8 @@ export default {
      * @desc 获取信息
      */
     async loadInfo() {
-    
-      let { errorCode, data } = await getProductDetail(this.$route.query)
+      
+      let { errorCode, data } = await getTaskDetail(this.$route.query)
       if (errorCode === 0) {
         this.editInfo = data
         window.sessionStorage.setItem('$editInfo', JSON.stringify(data))

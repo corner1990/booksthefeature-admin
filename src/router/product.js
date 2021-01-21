@@ -1,32 +1,32 @@
-const Product = () => import(/* webpackChunkName: "product" */ '../pages/product/')
-const ReleaseProduct = () => import(/* webpackChunkName: "release-product" */ '../pages/product/release-product.vue')
-const EditProduct = () => import(/* webpackChunkName: "edit-product" */ '../pages/product/release-product.vue')
+const Task = () => import(/* webpackChunkName: "product" */ '../pages/product/')
+const ReleaseTask = () => import(/* webpackChunkName: "release-product" */ '../pages/product/release-product.vue')
+const EditTask = () => import(/* webpackChunkName: "edit-product" */ '../pages/product/release-product.vue')
 
 const ProductRoutes = [
   {
-    path: '/product',
-    name: 'product',
-    component: Product,
+    path: '/task',
+    name: 'task',
+    component: Task,
     meta: {
-      title: '商品管理',
+      title: '任务模版',
       keepAlive: true
     }
   },
   {
-    path: '/release-product',
-    name: 'ReleaseProduct',
-    component: ReleaseProduct,
+    path: '/release-task',
+    name: 'Releasetask',
+    component: ReleaseTask,
     meta: {
-      title: '发布商品',
+      title: '发布任务',
       keepAlive: true
     }
   },
   {
-    path: '/edit-product',
-    name: 'EditProduct',
-    component: EditProduct,
+    path: '/edit-task',
+    name: 'EditTask',
+    component: EditTask,
     meta: {
-      title: '编辑商品',
+      title: '编辑任务',
       keepAlive: true
     }
   }

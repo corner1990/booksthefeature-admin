@@ -1,6 +1,6 @@
 <template>
   <div class="orders">
-    <h2 class="title">订单管理</h2>
+    <h2 class="title">任务管理</h2>
     <!-- <div
       class="date-piker-wrap"
       v-show="activeName == '60'"
@@ -45,6 +45,7 @@
 <script>
 // import Search from './order/search'
 import DataTable from './order/data-table'
+import Bus from '../../utils/bus'
 import { getOrderList, getExpressList } from './api'
 export default {
   name: 'orders',
@@ -56,16 +57,20 @@ export default {
           key: '0'
         },
         {
-          label: '待发货',
+          label: '待支付',
+          key: '1'
+        },
+        {
+          label: '审核中',
           key: '2'
         },
-        // {
-        //   label: '待收货',
-        //   key: '2'
-        // },
         {
-          label: '已发货',
-          key: '4'
+          label: '进行中',
+          key: '3'
+        },
+        {
+          label: '已结束',
+          key: '100'
         }
       ],
       filterInfo: {},
@@ -123,13 +128,13 @@ export default {
       let { errorCode, data } = await getOrderList({
         ...this.pageInfo,
         ...this.filterInfo,
-        order_type: order_status,
+        task_order_query_type: order_status,
         index
       })
       this.loading = false
       if (errorCode === 0) {
-        this.list = data.order_list
-        this.pageInfo = data.pageInfo
+        this.list = data.list
+        this.pageInfo = data.page_info
       }
     },
     /**
@@ -167,6 +172,19 @@ export default {
         window.sessionStorage.setItem('$expressList', JSON.stringify(data))
         this.expressList = data
       }
+    },
+    /**
+     * @desc 审核项目
+     */
+    checkTask(task_order_status, info) {
+      
+      this.list = this.list.map(item => {
+        if (item.task_order_sn != info.task_order_sn) return item
+        return {
+          ...item,
+          task_order_status
+        }
+      })
     }
   },
   filters: {
@@ -179,6 +197,7 @@ export default {
   mounted() {
     this.loadInfo()
     // this.loadExpressList()
+    Bus.$on('checkTask', this.checkTask)
   }
 }
 </script>

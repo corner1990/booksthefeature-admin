@@ -1,30 +1,26 @@
 <template>
-  <div class="product-detail">
-    <img class="top-img" src="./images/top.jpg" width="375" />
-    <img class="product-img" :src="mainImg" />
-    <ProductInfo :info="{}" />
+  <div class="task-detail">
+    <img :src="info.task_cover" alt="img" srcset="" class="task-cover">
+    <h3 class="title">{{info.task_name}}</h3>
+    <p class="task-desc">{{ info.task_desc }}</p>
+    <p class="line-num">最大押金：{{ info.display_max_amount }}</p>
+    <p class="line-num">最小押金：{{ info.display_min_amount }}</p>
+    <p class="line-num">回报奖金：{{ info.display_reward_rate }}</p>
+    <p class="update-tiem">{{ info.updated_timestamp }}</p>
   </div>
 </template>
 
 <script>
 import { mapState } from 'vuex'
-import ProductInfo from'./components/product-info'
 export default {
-  name: 'product-detail',
-
-  components: {
-    ProductInfo
-  },
+  name: 'task-detail',
+  components: {},
   computed: {
     ...mapState('product', ['info']),
-    mainImg() {
-      let {
-        base_info = {}
-      } = this.info
-      return base_info.main_image || 'https://ipxcdn.jfshare.com/system/admin/4e41d37a6d2c1ca439edea985d90aa36.jpg'
-    }
+    
   },
   mounted() {
+    console.log('info', this.info)
   }
 }
 </script>
@@ -32,7 +28,7 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="less">
 @import url('../../less/main.less');
-.product-detail{
+.task-detail{
   position: relative;
   z-index: 3;
   width: 375px;
@@ -63,12 +59,25 @@ export default {
     background-color: red;
     -webkit-border-radius: 6px;
   }
-  .top-img{
-    margin: 4px 0;
-    width: 369px;
+  .task-cover{
+    width: 100%;
+    max-height: 240px;
+    object-fit: cover;
   }
-  .product-img{
-    width: 369px;
+  .title{
+    line-height: 32px;
+    margin-top: 10px;
+    font-size: 20px;
+    padding: 0 10px;
+  }
+  .task-desc{
+    padding: 0 10px;
+    margin: 10px 0;
+    font-size: 14px;
+  }
+  .line-num{
+    padding: 0 10px;
+    color: @primary;
   }
   
 }

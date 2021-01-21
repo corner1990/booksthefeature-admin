@@ -170,7 +170,7 @@ export default {
   overflow: auto;
   .el-table {
     th{
-      background-color: #00b799 !important;
+      background-color: #00b4fc !important;
     }
   } 
 }
@@ -180,7 +180,7 @@ export default {
 }
 .no-data{
   padding: 200px;
-  color: #00b799;
+  color: #00b4fc;
   text-align: center;
 }
 </style>
@@ -191,7 +191,7 @@ export default {
 .data-table{
   .el-table {
     th{
-      background-color: #00b799 !important;
+      background-color: #00b4fc !important;
       color: #fff;
     }
   } 

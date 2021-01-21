@@ -1,22 +1,22 @@
 const Orders = () => import('../pages/orders')
-const Calenar = () => import('../pages/calendar')
+const OrderOver = () => import('../pages/orders/order-over')
 const OrdersRoutes = [
   {
     path: '/orders/index',
     name: 'orders',
     component: Orders,
     meta: {
-      title: '商品管理',
+      title: '任务清单管理',
       keepAlive: true
     },
     
   },
   {
-    path: '/calendar/index',
-    name: 'Calenar',
-    component: Calenar,
+    path: '/orders/task-over',
+    name: 'orders',
+    component: OrderOver,
     meta: {
-      title: '送花日历',
+      title: '任务结束审核',
       keepAlive: true
     },
     

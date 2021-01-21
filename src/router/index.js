@@ -6,7 +6,7 @@ import Home from './home'
 import Product from './product'
 import Orders from './orders'
 import UploadImg from './upload-img'
-import Banner from './banner'
+// import Banner from './banner'
 import UserManager from './user-manager'
 import SiteSeting from './site-seting'
 
@@ -18,7 +18,7 @@ const routes = [
   ...Home,
   ...Product,
   ...Orders,
-  ...Banner,
+  // ...Banner,
   ...UserManager,
   ...UploadImg,
   ...SiteSeting

@@ -4,7 +4,7 @@
     <div class="layout-conent">
       <SideBar/>
       <div class="main-content" :class="{'content-collapse': collapse}">
-        <TagsCom />
+        <!-- <TagsCom /> -->
         <router-view />
       </div>
     </div>
@@ -14,7 +14,7 @@
 <script>
 import MainHeader from './header'
 import SideBar from './side-bar'
-import TagsCom from './Tags'
+// import TagsCom from './Tags'
 import Bus from '@/components/bus'
 
 export default {
@@ -22,7 +22,7 @@ export default {
   components: {
     MainHeader,
     SideBar,
-    TagsCom
+    // TagsCom
   },
   data() {
     return {

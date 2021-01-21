@@ -12,53 +12,57 @@
     <!-- @selection-change="handleSelectionChange" -->
         <!-- <el-table-column type="selection" width="55" align="center"></el-table-column> -->
         <!-- <el-table-column prop="id" label="ID" width="55" align="center"></el-table-column> -->
-        <el-table-column prop="name" label="商品名称" width="240" >
+        <el-table-column prop="name" label="任务名称" width="240" >
           <template slot-scope="scope">
               <div class="flex" @click="showDetail(scope.row)">
                 <el-image
                   class="product-img"
-                  :src="scope.row.base_info && scope.row.base_info.main_image || ''"
+                  :src="scope.row.task_cover || ''"
                 ></el-image>
                 <el-button
                   type="text"
                   class="product-name"
                 >
-                  {{ scope.row.base_info && scope.row.base_info.product_name || '' }}
+                  {{ scope.row.task_name || '' }}
                 </el-button>
               <!-- <p class="product-name"> </p> -->
               </div>
             </template>
         </el-table-column>
-        <el-table-column label="鲜花类型">
-            <template slot-scope="scope">{{scope.row.base_info.product_type === 1 ? '包月鲜花花' : '礼品鲜花'}}</template>
+        <el-table-column label="任务描述">
+            <template slot-scope="scope">
+              <p class="task-desc">{{scope.row.task_desc}}</p>
+            </template>
         </el-table-column>
         <el-table-column label="价格">
-            <template slot-scope="scope">￥{{scope.row.base_info.format_sale_price}}</template>
+            <template slot-scope="scope">￥{{scope.row.display_max_amount}}</template>
         </el-table-column>
         <!-- <el-table-column label="商品地址 ceshi ">
           <template slot-scope="scope">
             <el-tag @click="copyUrl(scope.row)">复制站内链接</el-tag>
           </template>
         </el-table-column> -->
-        <el-table-column label="销量" align="center">
+        <el-table-column label="任务信息" align="center">
             <template slot-scope="scope">
-                <el-tag
-                  type="success"
-                >{{scope.row.base_info.sale}}</el-tag>
+              <div class="info">
+                <p>最大押金：{{ scope.row.display_max_amount }}</p>
+                <p>最小押金：{{ scope.row.display_min_amount }}</p>
+                <p>奖金比例：{{ scope.row.display_reward_rate }}</p>
+              </div>
             </template>
         </el-table-column>
 
         <el-table-column prop="created_timestamp" label="创建时间">
           <template slot-scope="scope">
                 <p
-                >{{scope.row.base_info.updated_timestamp | dateFormat}}</p>
+                >{{scope.row.updated_timestamp | dateFormat}}</p>
             </template>
         </el-table-column>
         <el-table-column label="状态" align="center">
             <template slot-scope="scope">
               <p>
-                <el-tag type="success" v-show="scope.row.base_info.publish_status == 1">上架</el-tag>
-                <el-tag type="warning" v-show="scope.row.base_info.publish_status != 1">下架</el-tag>
+                <el-tag type="success" v-show="scope.row.task_status == 1">正常</el-tag>
+                <el-tag type="warning" v-show="scope.row.task_status != 1">冻结</el-tag>
               </p>
             </template>
         </el-table-column>
@@ -66,23 +70,18 @@
           <template slot-scope="scope">
             <el-button
               type="text"
-              class="red"
-              @click="copyUrl(scope.row)"
-            >复制站内链接</el-button>
-            <el-button
-              type="text"
               @click="handleEdit(scope.$index, scope.row)"
             >编辑</el-button>
             <el-button
               type="text"
-              v-show="scope.row.base_info.publish_status !== '1'"
-              @click="operation(scope.$index, scope.row)"
-            >上架</el-button>
+              v-show="scope.row.task_status != '1'"
+              @click="operation(scope.$index, scope.row, 1)"
+            >解冻</el-button>
             <el-button
               type="text"
-              v-show="scope.row.base_info.publish_status === '1'"
-              @click="operation(scope.$index, scope.row)"
-            >下架</el-button>
+              v-show="scope.row.task_status == '1'"
+              @click="operation(scope.$index, scope.row, -1)"
+            >冻结</el-button>
             <el-button
               type="text"
               class="red"
@@ -97,7 +96,7 @@
 
 <script>
 import { dateFormat, formatPrice } from '@/utils/utils'
-import { deleteProduct, operateProduct } from '../api'
+import { deleteTask, operateTask } from '../api'
 import { mapMutations } from 'vuex'
 export default {
   name: 'data-table',
@@ -143,7 +142,6 @@ export default {
       setStore: 'update'
     }),
     showDetail(info) {
-      console.log('info', info)
       this.setStore({key: 'info', val: info})
       this.$emit('update', 'showDetail', true)
     },
@@ -159,9 +157,9 @@ export default {
             type: 'warning'
         })
           .then(() => {
-            let { item_id } = row.base_info
+            let { task_id } = row
 
-            return deleteProduct({item_id})
+            return deleteTask({task_id})
           })
           .then((res) => {
             let { errorCode, errorMessage } = res
@@ -191,37 +189,33 @@ export default {
     // 编辑操作
     handleEdit(index, row) {
       window.sessionStorage.setItem('refersh', '1')
-      this.$router.push({ path: '/edit-product', query: { item_id: row.base_info.item_id } })
+      this.$router.push({ path: '/edit-task', query: { task_id: row.id } })
     },
     /**
      * @des 上下架
      */
-    async operation(index, row) {
+    async operation(index, row, task_status) {
       // let item_array = [row.base_info.item_id]
-      let { base_info } = row
+      
       let { type } = this
       type -= 0
       // 操作类型 ：1.上架0.下架
-      let publish_status = row.base_info.publish_status === '1' ? 0 : 1
-      let msg = '下架成功'
-      if (publish_status === 1) {
-        msg = "上架成功"
+      let msg = '冻结成功'
+      if (task_status === 1) {
+        msg = "解冻成功"
       }
-      let { errorCode } = await operateProduct({ item_id: base_info.item_id, publish_status })
+      let { errorCode } = await operateTask({ task_id: row.id, task_status })
       if (errorCode === 0) {
         this.$message.success(msg)
         this.tableData = this.tableData.map(item => {
-          if (item.base_info.item_id !== row.base_info.item_id) return item
+          if (item.id !== row.id) return item
           return {
             ...row,
-            base_info: {
-              ...base_info,
-             publish_status: publish_status 
-            }
+            task_status
           }
         }).filter(item => {
           if (type === 0) return true
-          return type === item.publish_status
+          return type === item.task_status
         })
       }
     },
@@ -273,7 +267,6 @@ export default {
   },
   mounted() {
     this.tableData = this.list
-
     
   }
 }
@@ -281,14 +274,25 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="less">
+@import url('../../../less/main.less');
 .data-table{
   .product-name{
     margin-left: 10px;
   }
   .product-img{
     width: 100px;
+    min-width: 100px;
     height: 100px;
     object-fit: cover;
+  }
+  .task-desc{
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    cursor: pointer;
+    color: @color-brand;
   }
 }
 </style>

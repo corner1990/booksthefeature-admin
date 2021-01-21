@@ -51,7 +51,7 @@ export default {
   data() {
     return {
       collapse: false,
-      active: '/calendar/index',
+      active: '/orders/index',
       items: [
         // {
         //   icon: 'el-icon-s-home',
@@ -59,41 +59,41 @@ export default {
         //   title: '系统首页'
         // },
         
-        {
-          icon: 'el-icon-date',
-          index: '/calendar/index',
-          title: '送花日历'
-        },
+        // {
+        //   icon: 'el-icon-date',
+        //   index: '/calendar/index',
+        //   title: '送花日历'
+        // },
         {
           icon: 'el-icon-s-order',
           index: '/orders/index',
-          title: '订单管理'
+          title: '任务清单管理'
         },
         {
           icon: 'el-icon-s-goods',
-          index: '/product',
-          title: '商品管理'
+          index: '/task',
+          title: '任务模版'
         },
-        {
-          icon: 'el-icon-view',
-          index: '/found',
-          title: '发现页内容管理'
-        },
-        {
-          icon: 'el-icon-picture-outline',
-          index: '/banner',
-          title: 'banner管理'
-        },
+        // {
+        //   icon: 'el-icon-view',
+        //   index: '/found',
+        //   title: '发现页内容管理'
+        // },
+        // {
+        //   icon: 'el-icon-picture-outline',
+        //   index: '/banner',
+        //   title: 'banner管理'
+        // },
         {
           icon: 'el-icon-news',
           index: '/user-manager',
           title: '用户管理'
         },
-        {
-          icon: 'el-icon-setting',
-          index: '/site-seting',
-          title: '站点配置'
-        }
+        // {
+        //   icon: 'el-icon-setting',
+        //   index: '/site-seting',
+        //   title: '站点配置'
+        // }
       ]
     }
   },

@@ -1,33 +1,27 @@
 <template>
   <div class="base-info">
-    <h3 class="item-title">基本信息</h3>
+    <h3 class="item-title">任务信息</h3>
     <el-form
       :label-position="labelPosition"
-      label-width="100px"
+      label-width="120px"
       ref="baseForm"
       class="base-form"
       :model="info"
       :rules="rules"
     >
-      <el-form-item label="鲜花名称" prop="product_name">
-        <el-input class="medium" v-model="info.product_name">
+      <el-form-item label="任务名称" prop="task_name">
+        <el-input
+          class="medium"
+          v-model="info.task_name"
+          placeholder="请输入任务名称"
+        >
         </el-input>
       </el-form-item>
-      <el-form-item label="鲜花类型" prop="product_type">
-        <el-select placeholder="鲜花类型" v-model="info.product_type">
-          <el-option
-            v-for="(item, key) in flowerList"
-            :key="key"
-            :label="item.name"
-            :value="item.val"
-          ></el-option>
-        </el-select>
-      </el-form-item>
-      <!-- <el-form-item label="商品编码" prop="bar_code">
-        <el-input class="medium" v-model="info.bar_code">
+      <el-form-item label="任务描述" prop="task_desc">
+        <el-input type="textarea" class="medium" v-model="info.task_desc" placeholder="请输入任务描述">
         </el-input>
-      </el-form-item> -->
-      <el-form-item label="商品主图" prop="main_image">
+      </el-form-item>
+      <el-form-item label="任务主图" prop="main_image">
         <el-upload
           action="#"
           :file-list="info.main_image"
@@ -68,31 +62,39 @@
         </el-upload>
       </el-form-item>
      
-      <el-form-item label="鲜花摘要" prop="summary">
-        <el-input class="medium" v-model="info.summary">
+      <el-form-item label="任务时间" prop="day_num">
+        <el-input class="medium" v-model="info.day_num" placeholder="请输入任务时间，按照天计算">
         </el-input>
       </el-form-item>
-      <el-form-item label="标准价格" prop="original_price">
-        <el-input class="medium" v-model="info.original_price">
+      <el-form-item label="任务最大押金" prop="max_amount">
+        <el-input class="medium" v-model="info.max_amount" placeholder="请输入正整数">
           <template slot="prepend">&yen;</template>
         </el-input>
       </el-form-item>
-      <el-form-item label="当前价格" prop="current_price">
-        <el-input class="medium" v-model="info.current_price">
+      <el-form-item label="任务最小押金" prop="min_amount">
+        <el-input class="medium" v-model="info.min_amount" placeholder="请输入正整数">
           <template slot="prepend">&yen;</template>
         </el-input>
       </el-form-item>
-      <el-form-item label="商品排序" prop="sort">
-        <el-input class="medium" v-model="info.sort"></el-input>
+      <el-form-item label="任务回报率" prop="reward_rate">
+        <el-input class="medium" v-model="info.reward_rate"></el-input>
+        <el-select
+          v-model="info.task_type"
+          placeholder="请选择奖金计算规则"
+          style="margin-left: 10px;"
+        >
+          <el-option
+            v-for="item in rewardList"
+            :key="item.val"
+            :label="item.name"
+            :value="item.val">
+          </el-option>
+        </el-select>
       </el-form-item>
-      <!-- <el-form-item label="快递运费" prop="shipping_price">
-        <el-input class="medium" v-model="info.shipping_price">
-          <template slot="prepend">&yen;</template>
-        </el-input>
-      </el-form-item> -->
-      <!-- <el-form-item label="库存" prop="stock">
-        <el-input class="medium" v-model="info.stock"></el-input>
-      </el-form-item> -->
+      <el-form-item label="任务排序" prop="seq">
+        <el-input class="medium" v-model="info.seq"></el-input>
+      </el-form-item>
+
     </el-form>
     <el-dialog :visible.sync="dialogVisible">
       <img width="100%" :src="dialogImageUrl" alt="">
@@ -102,11 +104,8 @@
 
 <script>
 import {
-  // getOssSign,
   uploadBase64Image,
 } from '../api'
-// import md5 from '@/utils/md5'
-// import OSS from 'ali-oss'
 
 export default {
   name: 'base-info',
@@ -117,26 +116,28 @@ export default {
     return {
       labelPosition: 'right',
       info: {
-        stock: 99999,
-        product_name: '',
+        task_name: '',
+        task_desc: '',
         main_image: [],
-        summary: '',
-        shipping_price: 0,
-        current_price: '',
-        original_price: '',
-        sort: 0
+        day_num: '',
+        max_amount: '',
+        reward_rate: 50,
+        min_amount: '',
+        seq: 0,
+        task_type: 1
       },
+      main_image: [],
       dialogImageUrl: '',
       dialogVisible: false,
       disabled: false,
-      flowerList: [
+      rewardList: [
         {
-          name: '包月鲜花',
-          val: 1
+          name: '百分比',
+          val: '1'
         },
         {
-          name: '礼品鲜花',
-          val: 2
+          name: '固定金额',
+          val: '2'
         }
       ]
     }
@@ -173,29 +174,7 @@ export default {
     /**
      * @desc 获取签名
      */
-    // async getSign() {
-    //   let { errorCode, data } = await getOssSign()
-    //   if (errorCode === 0) {
-    //     this.sign = data
-    //     let {
-    //       securityToken,
-    //       accessKeyId,
-    //       accessKeySecret,
-    //       bucket,
-    //       endpoint
-    //     } = data
-    //     // 创建实例
-    //     let client  = new OSS({
-    //       endpoint,
-    //       accessKeyId,
-    //       accessKeySecret,
-    //       bucket,
-    //       stsToken: securityToken
-    //     })
-    //     this.client  = client 
-    //   }
-      
-    // },
+    
     /**
      * 上传图片
      * @param data
@@ -211,26 +190,15 @@ export default {
           file.requestUrls = data
         } else {
           this.info.main_image = []
-          this.$message.error('图片上传失败，请重新上传2');
+          this.$message.error('图片上传失败，请重新上传');
         }
 
       } catch(err) {
         console.log('err')
         this.info.main_image = []
-        this.$message.error('图片上传失败，请重新上传1');
+        this.$message.error('图片上传失败，请重新上传');
       }
-      // this.client.put(imgKey, uploadFile)
-      //   .then(response => {
-      //     // 上传完毕回调
-      //     let res = response.res
-      //     if (res.status === 200) {
-      //       file.requestUrls = res.requestUrls
-      //       // param.onSuccess(res) 
-      //     } else {
-      //       // param.onError(res)
-      //     }
-      //     // 图片前缀
-      //   })
+     
     },
     /**
      * @desc 剪贴图片
@@ -280,25 +248,19 @@ export default {
       if (!infoStr) {
         return false
       }
-      let {
-        base_info
-      } = JSON.parse(infoStr)
-
-      let main_image = base_info.main_image ? [{url: base_info.main_image}] : []
-      let sale_price = base_info.sale_price / 100
-      let original_price = base_info.original_price / 100
-      let shipping_price = base_info.shipping_price / 100
-      let sort = base_info.sort ? parseInt(base_info.sort ) : 0
-      this.info = {
-        ...base_info,
-        main_image,
-        sale_price,
-        sort,
-        original_price,
-        shipping_price,
-        current_price: sale_price
+      let obj = JSON.parse(infoStr)
+      let info = {
+        main_image: []
       }
-      this.$emit('update', 'baseInfo', base_info)
+      let keys = ['task_name', 'task_desc', 'task_status', 'day_num', 'reward_rate', 'seq', 'task_type']
+      keys.map(key => {
+        info[key] = obj[key]
+      })
+      info.main_image = [{url: obj.task_cover, file: 'task_cover'}]
+      info.task_id = obj.id
+      info.max_amount = parseInt(obj.display_max_amount)
+      info.min_amount = parseInt(obj.display_min_amount)
+      this.info = info
     },
 
     checkForm() {
@@ -338,35 +300,38 @@ export default {
       
       return {
        
-        product_name: [
-          { required: true, message: '请输入商品名称', trigger: 'blur' }
+        task_name: [
+          { required: true, message: '请输入任务名称', trigger: 'blur' }
         ],
-        product_type: [
+        task_desc: [
+          { required: true, message: '请输入任务描述', trigger: 'blur' }
+        ],
+        task_type: [
           { required: true, message: '请选择鲜花类型', trigger: 'blur' }
         ],
         main_image: [
-          { required: true, message: '请上传商品主图', trigger: 'blur' }
+          { required: true, message: '请上传任务图片', trigger: 'blur' }
         ],
         // description: [
         //   { required: true, message: '请输入商品描述', trigger: 'blur' }
         // ],
-        summary: [
-          { required: true, message: '请输入商品摘要', trigger: 'blur' }
+        day_num: [
+          { required: true, message: '请输入任务时间周期', trigger: 'blur' }
         ],
         shipping_price: [
           { required: true, message: '请输入商品运费', trigger: 'blur' }
         ],
-        original_price: [
-          { required: true, message: '请输入标准价格', trigger: 'blur' }
+        max_amount: [
+          { required: true, message: '请输入押金最大金额', trigger: 'blur' }
         ],
-        stock: [
+        min_amount: [
+          { required: true, message: '请输入押金最小金额', trigger: 'blur' }
+        ],
+        seq: [
           { required: true, message: '请输入库存', trigger: 'blur' }
         ],
-        sort: [
-          { required: true, message: '请输入排序', trigger: 'blur' }
-        ],
-        current_price: [
-          { required: true, message: '请输入当前价格', trigger: 'blur' }
+        reward_rate: [
+          { required: true, message: '请输入奖金回报率', trigger: 'blur' }
         ]
       }
     }

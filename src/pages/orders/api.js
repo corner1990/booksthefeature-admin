@@ -1,9 +1,7 @@
 import request from '@/utils/request'
 // 订单列表
-export const getOrderList = params => request.post('/api/admin/orderAdmin/queryOrderList', params)
-// 发货
-export const deliverOrder = params => request.post('/api/admin/orderAdmin/deliverOrder', params)
-// 关闭订单
-export const cancelOrder = params => request.post('/api/admin/orderAdmin/cancelOrder', params)
-// 获取快递公司列表
-export const getExpressList = params => request.post('/api/admin/orderAdmin/getExpressList', params)
+export const getOrderList = params => request.post('/api/admin/taskOrderAdmin/queryTaskOrderList', params)
+// 审核任务
+export const checkTaskOrder = params => request.post('/api/admin/taskOrderAdmin/checkTaskOrder', params)
+// 任务完成的认定结果审核
+export const checkTaskOrderSign = params => request.post('/api//admin/taskOrderAdmin/checkTaskOrderSign', params)
