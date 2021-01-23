@@ -9,7 +9,7 @@ export const createTask = params => request.post('/api/admin/taskAdmin/createTas
 // 批量上/下架商品
 export const operateTask = params => request.post('/api/admin/taskAdmin/updateTask', params)
 // 删除商品item
-export const deleteTask = params => request.post('/api/admin/ProductAdmin/deleteTask', params) //弃用 改用operateProduct
+export const deleteTask = params => request.post('/api/admin/taskAdmin/deleteTask', params) //弃用 改用operateProduct
 // 创建商品item
 export const createProductItem = params => request.post('/api/admin/ProductAdmin/CreateProductItem', params)
 // 获取品牌列表

@@ -51,9 +51,9 @@
           <div class="delivery">
             任务状态：
             <el-tag
-              :type="statusObj[scope.row.task_order_status].type"
+            :type="getType(scope.row.task_order_status)"
             >
-              {{statusObj[scope.row.task_order_status].label}}
+              {{getLabel(scope.row.task_order_status)}}
 
             </el-tag>
             <!-- <el-tag
@@ -109,13 +109,14 @@
          <el-button
           type="text"
           @click="newTaskReviewFn(scope.row)"
-          v-show="scope.row.task_order_status == 1"
+          v-show="scope.row.task_order_status == 10"
          >新增任务审核</el-button>
          <el-button
           type="text"
           @click="checkTaskOver(scope.row)"
+          :disabled="scope.row.task_order_status != 30"
          >任务完成审核</el-button>
-         <el-button type="text" disabled>发放奖金</el-button>
+         <!-- <el-button type="text" disabled>发放奖金</el-button> -->
         </template>
       </el-table-column>
     </el-table>
@@ -164,36 +165,20 @@ export default {
         id: -1,
         statusObj: {
           '1': {
-            label: '待审核付款',
+            label: '待付款',
             type: 'danger'
+          },
+          '10': {
+            label: '待审核',
+            type: 'warning'
           },
           '20': {
             label: '进行中',
             type: 'success'
           },
           '30': {
-            label: '待发货',
+            label: '待终审核',
             type: 'warning'
-          },
-          '40': {
-            label: '待收货',
-            type: 'warning'
-          },
-          '50': {
-            label: '已完成',
-            type: 'success'
-          },
-          '60': {
-            label: '已取消',
-            type: 'info'
-          },
-          '70': {
-            label: '已完成',
-            type: 'success'
-          },
-          '80': {
-            label: '已完成',
-            type: 'success'
           },
           '100': {
             label: '已结束',
@@ -221,6 +206,18 @@ export default {
                 this.tableData.splice(index, 1);
             })
             .catch(() => {});
+      },
+      getLabel(type) {
+        let { statusObj } = this
+        let obj = statusObj[type]
+        if (!obj) return ' '
+        return obj.label
+      },
+      getType(type) {
+        let { statusObj } = this
+        let obj = statusObj[type]
+        if (!obj) return ' '
+        return obj.type
       },
       async dirver(info) {
         

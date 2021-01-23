@@ -157,9 +157,9 @@ export default {
             type: 'warning'
         })
           .then(() => {
-            let { task_id } = row
+            let { id } = row
 
-            return deleteTask({task_id})
+            return deleteTask({task_id: id})
           })
           .then((res) => {
             let { errorCode, errorMessage } = res

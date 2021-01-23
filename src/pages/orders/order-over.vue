@@ -44,16 +44,13 @@
           <div class="info-line">
               <p class="label">最大押金：</p>
               <p class="info-content">
-                {{ info.task_order_sn ? info.task_order_sn : '' }}
-
+                &yen;{{ taskInfo.display_max_amount }}
               </p>
             </div>
             <div class="info-line">
               <p class="label">最小押金：</p>
               <p class="info-content">
-                {{ info.start_date ? info.start_date.replace(timeReg, '$1-$2-$3') : '' }}
-                至
-                {{ info.end_date ? info.end_date.replace(timeReg, '$1-$2-$3') : '' }}
+                &yen;{{ taskInfo.display_min_amount }}
 
               </p>
             </div>
@@ -140,17 +137,13 @@
         @click="pass"
         :disabled="checkDisbled"
       >审核通过</el-button>
+
       <el-button
         type="danger"
         plain
         @click="refuse"
         :disabled="checkDisbled"
       >审核不通过</el-button>
-      <el-button
-        type="primary"
-        plain
-        disabled
-      >发放奖金</el-button>
     </div>
     <el-dialog title="打卡记录" :visible.sync="showCheckInLog">
       <div class="check-log">
@@ -163,12 +156,24 @@
           <p class="check-remark">{{ logInfo.sign_content ? logInfo.sign_content : '' }}</p>
       </div>
     </el-dialog>
+    <el-dialog
+      title="奖金发放提示"
+      :visible.sync="sendRewardVisable"
+      width="30%"
+      top="20%"
+      center>
+      <span>您已经审核通过改任务，请联系给该任务人发放奖金！</span>
+      <span slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="sendRewardVisable = false">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import { checkTaskOrder, checkTaskOrderSign } from './api'
 import { dateFormat } from '../../utils/utils'
+import { getTaskDetail } from '../product/api'
 export default {
   name: 'order-over',
   data() {
@@ -185,7 +190,12 @@ export default {
         sign_data_detail: {
           data_list: [{}]
         }
-      }
+      },
+      taskInfo: {
+        display_max_amount: 0,
+        display_min_amount: 0
+      },
+      sendRewardVisable: false
     }
   },
   methods: {
@@ -222,6 +232,9 @@ export default {
       if (errorCode == 0) {
         this.$message(msg)
         this.info.task_order_status = task_order_status
+        if (sign_check_result == 1) {
+          this.sendRewardVisable = true
+        }
         this.cancel()
       }
     },
@@ -285,7 +298,15 @@ export default {
     },
     cancel() {
       console.log('cancel')
-      this.cancel()
+    },
+    /**
+     * @desc 加载详情
+     */
+    async loadTaskInfo(task_id) {
+      let { errorCode, data } = await getTaskDetail({task_id})
+      if (errorCode == 0) {
+        this.taskInfo = data
+      }
     }
   },
   filters: {
@@ -316,7 +337,7 @@ export default {
       return
     }
     this.info = JSON.parse(info)
-    console.log('info', this.info)
+    this.loadTaskInfo(this.info.task_id)
   }
 }
 </script>
@@ -406,6 +427,7 @@ export default {
     position: fixed;
     right: 40px;
     top: 380px;
+    min-width: 200px;
     background: #fff;
     padding: 10px;
     box-shadow: 0 0 3px 3px #eee;
