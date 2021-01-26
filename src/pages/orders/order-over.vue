@@ -121,7 +121,10 @@
         暂无打卡记录
       </div>
     </div>
-    <div class="operation-btn-wrap">
+    <div
+      class="operation-btn-wrap"
+      v-if="info.task_order_status == 1 ||  info.task_order_status == 30"
+    >
       <h4 class="chech-title">审核</h4>
       <div>
         <el-input
@@ -217,6 +220,7 @@ export default {
       if (errorCode == 0) {
         this.$message(msg)
         this.info.task_order_status = task_order_status
+        localStorage.setItem('$taskOverInfo', JSON.stringify(this.info))
         this.cancel()
       }
     },
@@ -232,8 +236,10 @@ export default {
       if (errorCode == 0) {
         this.$message(msg)
         this.info.task_order_status = task_order_status
+        localStorage.setItem('$taskOverInfo', JSON.stringify(this.info))
         if (sign_check_result == 1) {
           this.sendRewardVisable = true
+          
         }
         this.cancel()
       }

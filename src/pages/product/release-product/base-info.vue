@@ -235,8 +235,9 @@ export default {
 
       //   this.uploadImg(file)
       // }, 'image/jpeg', '0.8')
-
-      file.image = canvas.toDataURL('image/jpeg', 0.71)
+      let arr = file.name.split('.').pop()
+    
+      file.image = canvas.toDataURL(`image/${arr}`, 0.71)
       // 上传图片
       this.uploadImg(file)
     },

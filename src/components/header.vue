@@ -43,8 +43,8 @@ export default {
     return {
       collapse: false,
       userInfo: {
-        "nick_name":"小花仙",
-        "avatar":"https://ipxcdn.jfshare.com/system/admin/acf6f273c1cd77066b4541308f782a88.png"
+        "nick_name":"管理员",
+        "avatar":"http://saidad.oss-cn-guangzhou.aliyuncs.com/image/9ec96a9f12eaf8f8abd0e1bf80b41811.png"
       }
     }
   },
