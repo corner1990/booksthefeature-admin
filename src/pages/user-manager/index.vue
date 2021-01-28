@@ -122,8 +122,8 @@ export default {
         index
       })
       if (errorCode === 0) {
-        this.list = data.user_list
-        this.pageInfo = data.pageInfo
+        this.list = data.list
+        this.pageInfo = data.page_info
       }
       this.loading = false
     },

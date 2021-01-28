@@ -112,7 +112,7 @@ export default {
         
         console.log('JSON.stringify(data)', JSON.stringify(data))
         // 读取重定向地址
-        let rejectInfo =  window.localStorage.getItem('$_reject')
+        let rejectInfo =  localStorage.getItem('$_reject')
         // this.loadInfo()
         
         if (rejectInfo) {
