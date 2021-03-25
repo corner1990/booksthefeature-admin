@@ -46,7 +46,7 @@
 // import Search from './order/search'
 import DataTable from './order/data-table'
 import Bus from '../../utils/bus'
-import { getOrderList, getExpressList } from './api'
+import { getOrderList } from './api'
 export default {
   name: 'orders',
   data() {
@@ -161,17 +161,8 @@ export default {
       let { name } = tab
       name = name === 'all' ? null : name - 0
       this.order_status = name
+      sessionStorage.setItem('$orderTab', name)
       this.loadInfo(0)
-    },
-    /**
-     * @desc 获取快递公司列表
-     */
-    async loadExpressList() {
-      let { errorCode, data } = await getExpressList()
-      if (errorCode === 0) {
-        window.sessionStorage.setItem('$expressList', JSON.stringify(data))
-        this.expressList = data
-      }
     },
     /**
      * @desc 审核项目
@@ -195,9 +186,15 @@ export default {
     }
   },
   mounted() {
-    this.loadInfo()
-    // this.loadExpressList()
-    Bus.$on('checkTask', this.checkTask)
+    console.log('345')
+    let name = sessionStorage.getItem('$orderTab')
+    this.activeName = name ? name : '0'
+    name = name === 'all' ? null : name - 0
+    this.order_status = name
+    this.$nextTick(() => {
+      this.loadInfo()
+      Bus.$on('checkTask', this.checkTask)
+    })
   }
 }
 </script>
