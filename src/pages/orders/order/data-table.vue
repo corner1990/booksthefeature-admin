@@ -26,6 +26,7 @@
           </div>
         </template>
       </el-table-column>
+      
       <!-- <el-table-column
         prop="name"
         label="订单类型"
@@ -37,10 +38,23 @@
       
       <el-table-column
         label="任务备注"
+        width="170"
         >
         <template slot-scope="scope">
           <div class="bless">
             {{ scope.row.remark ? scope.row.remark : '暂无留言信息'}}
+          </div>
+        </template>
+      </el-table-column>
+      <el-table-column
+        label="自定义任务信息"
+        >
+        <template slot-scope="scope">
+          <div class="delivery">
+            <p class="info">
+              自定义名称：{{ scope.row.task_order_name}}
+            </p>
+            <!-- <p class="info">自定义描述： {{ scope.row.user_remark ? '是' : '否'}}</p> -->
           </div>
         </template>
       </el-table-column>
@@ -164,6 +178,10 @@ export default {
         idx: -1,
         id: -1,
         statusObj: {
+          '0': {
+            label: '已取消',
+            type: 'danger'
+          },
           '1': {
             label: '待付款',
             type: 'danger'

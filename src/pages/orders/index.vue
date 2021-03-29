@@ -13,7 +13,7 @@
         :picker-options="pickerOptions">
       </el-date-picker>
     </div> -->
-    <!-- <Search @search="search" /> -->
+    <Search @search="search" />
     <section class="content">
       <el-tabs v-model="activeName" type="card" @tab-click="changeStatus">
         <template>
@@ -43,7 +43,7 @@
 </template>
 
 <script>
-// import Search from './order/search'
+import Search from './order/search'
 import DataTable from './order/data-table'
 import Bus from '../../utils/bus'
 import { getOrderList } from './api'
@@ -85,36 +85,10 @@ export default {
       },
       expressList: [],
       loading: false,
-      day: '',
-      pickerOptions: {
-        disabledDate(time) {
-          return time.getTime() > Date.now();
-        },
-        shortcuts: [{
-          text: '今天',
-          onClick(picker) {
-            picker.$emit('pick', new Date());
-          }
-        }, {
-          text: '昨天',
-          onClick(picker) {
-            const date = new Date();
-            date.setTime(date.getTime() - 3600 * 1000 * 24);
-            picker.$emit('pick', date);
-          }
-        }, {
-          text: '一周前',
-          onClick(picker) {
-            const date = new Date();
-            date.setTime(date.getTime() - 3600 * 1000 * 24 * 7);
-            picker.$emit('pick', date);
-          }
-        }]
-      }
     }
   },
   components: {
-    // Search,
+    Search,
     DataTable
   },
   methods: {
@@ -145,12 +119,7 @@ export default {
         index: 0,
         page_size: 10
       }
-      let { 
-        time: { start_time, end_time }, 
-        ...info
-      } = filterInfo
-      
-      this.filterInfo = { ...info, start_time, end_time }
+      this.filterInfo = filterInfo
       this.loadInfo()
     },
     handlePageChange(index) {
@@ -186,11 +155,11 @@ export default {
     }
   },
   mounted() {
-    console.log('345')
     let name = sessionStorage.getItem('$orderTab')
     this.activeName = name ? name : '0'
     name = name === 'all' ? null : name - 0
     this.order_status = name
+    
     this.$nextTick(() => {
       this.loadInfo()
       Bus.$on('checkTask', this.checkTask)
