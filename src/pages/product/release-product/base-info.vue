@@ -133,11 +133,11 @@ export default {
       rewardList: [
         {
           name: '百分比',
-          val: '1'
+          val: 1
         },
         {
           name: '固定金额',
-          val: '2'
+          val: 0
         }
       ]
     }
